@@ -128,8 +128,14 @@ function isTriangle(a, b, c) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *
  */
-function doRectanglesOverlap(/* rect1, rect2 */) {
-  throw new Error('Not implemented');
+function doRectanglesOverlap(rect1, rect2) {
+  if ((rect1.left > rect2.left + rect2.width
+    || rect2.left > rect1.left + rect1.width)
+    || (rect1.top + rect1.height < rect2.top
+    || rect2.top + rect2.height < rect1.top)) {
+    return false;
+  }
+  return true;
 }
 
 
@@ -204,8 +210,8 @@ function findFirstSingleChar(str) {
  *   5, 3, true, true   => '[3, 5]'
  *
  */
-function getIntervalString(/* a, b, isStartIncluded, isEndIncluded */) {
-  throw new Error('Not implemented');
+function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
+  return `${isStartIncluded ? '[' : '('}${a > b ? `${b}, ${a}` : `${a}, ${b}`}${isEndIncluded ? ']' : ')'}`;
 }
 
 
@@ -371,8 +377,24 @@ function toNaryString(num, n) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/webalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  const theSame = pathes.reduce((res, item) => {
+    let index = 0;
+    const length = res.length > item.length ? item.length : res.length;
+    for (let i = 0; i < length; i += 1) {
+      if (res[i] === item[i]) {
+        index += 1;
+      } else {
+        i = length;
+      }
+    }
+    return res.slice(0, index);
+  });
+  const lastIndex = theSame.lastIndexOf('/');
+  if (lastIndex !== -1) {
+    return theSame.slice(0, lastIndex + 1);
+  }
+  return theSame;
 }
 
 
@@ -394,8 +416,26 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const aLength = m1.length;
+  const bLength = m2.length;
+
+  const res = [];
+  for (let i = 0; i < bLength; i += 1) {
+    if (m1.length > i) {
+      const row = [];
+      for (let j = 0; j < aLength; j += 1) {
+        let item = 0;
+        for (let k = 0; k < bLength; k += 1) {
+          item += m1[i][k] * m2[k][j];
+        }
+        row.push(item);
+      }
+      res.push(row);
+    }
+  }
+
+  return res;
 }
 
 
@@ -429,8 +469,20 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  const lines = [];
+  for (let i = 0; i < position.length; i += 1) {
+    lines.push(position[i].join(''));
+    lines.push(`${position[0][i]}${position[1][i]}${position[2][i]}`);
+  }
+  lines.push(`${position[0][0]}${position[1][1]}${position[2][2]}`);
+  lines.push(`${position[0][2]}${position[1][1]}${position[2][0]}`);
+
+  let res = lines.find((item) => item === 'XXX' || item === '000');
+  if (res) {
+    res = res.slice(2);
+  }
+  return res;
 }
 
 
